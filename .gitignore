@@ -1,3 +1,9 @@
+# no PDF in this repo
+
+*.pdf
+
+# standard LaTeX things
+
 *.swp
 *.acn
 *.acr
