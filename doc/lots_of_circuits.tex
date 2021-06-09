@@ -1,0 +1,261 @@
+\documentclass[]{article}
+\usepackage[T1]{fontenc}
+\usepackage[siunitx, RPvoltages]{circuitikz}
+\usepackage[landscape, margin=5mm]{geometry}
+\usetikzlibrary{shapes.symbols}
+
+\newcommand{\shunt}{\mathop{/\!/}}
+\def\coord(#1){coordinate(#1)}
+\def\coord(#1){coordinate(#1) node[circle, red, draw, inner sep=1pt,pin={[red, overlay, inner sep=0.5pt, font=\tiny, pin distance=0.1cm, pin edge={red, overlay,}]75:#1}](node-#1){}}
+\def\coordd(#1){coordinate(#1) node[circle, red, draw, inner sep=1pt,pin={[red, overlay, inner sep=0.5pt, font=\tiny, pin distance=0.1cm, pin edge={red, overlay,}]-145:#1}](node-#1){}}
+\def\killdepth#1{{\raisebox{0pt}[\height][0pt]{#1}}}
+\newcommand\bjtname[1]{%
+    ($(#1.C)!0.5!(#1.E)$) node[anchor=west]{#1}%
+}
+
+%% Checking styling %%%%%%%%%%%%%
+\ctikzsetstyle{romano}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\input{data.itx}
+
+\begin{circuitikz}[american]
+    \draw (0,0) node[npn](Q1){};
+    \draw (Q1.B) node[anchor=west, right=7mm, ]{Q1};
+    \draw (Q1.E) to[R=$R_E$] (0,-3) node[ground](GND){}; %define GND level
+    \draw[densely dashed] (Q1.E) -- ++(2,0) coordinate(tmp) to[C] (tmp |- GND) node[ground]{};
+    \draw (Q1.B) to[short] (-2,0) coordinate (in) to[R=$R_2$] (in |- GND) node[ground]{};
+    \draw (in) to[short,*-o] ++(-0.5,0) node[left]{$v_i$};
+    \draw (in)  to[R, l_=$R_1$] (-2, 3) node[vcc](VCC){}; %define VCC level
+    \draw (Q1.C) to[R, l_=$R_C$] (Q1.C |- VCC) node[vcc]{$V_{CC}=\SI{10}{V}$};
+    \draw (Q1.C) to[short, -o] ++(1,0) node[right]{$v_o$};
+
+    \begin{scope}[xshift=6cm]
+        \draw (0,0) node[pnp](Q1){};
+        \draw (Q1.B) node[anchor=west, right=7mm, ]{Q1};
+        \draw (Q1.C) to[R=$R_C$] (Q1.C |- GND) node[ground]{};
+        \draw (Q1.B) to[short] (-2,0) coordinate (in) to[R=$R_2$] (in |- GND) node[ground]{};
+        \draw (in) to[short,*-o] ++(-0.5,0) node[left]{$v_i$};
+        \draw (in)  to[R, l_=$R_1$] (in |- VCC) node[vcc]{};
+        \draw (Q1.E) to[short] (Q1.E |- VCC) node[vcc]{$V_{CC}=\SI{10}{V}$};
+        \draw (Q1.C) to[short, -o] ++(1,0) node[right]{$v_o$};
+    \end{scope}
+\end{circuitikz}
+\qquad
+\begin{circuitikz}[american]
+    \draw (0,0) to[sV, v<=$v_s$,] ++(0,-3) node[ground]{};
+    \draw (0,0) to [R=${R_s=\SI{250}{\ohm}}$] ++(2,0) to [C=${C_1=\infty}$, ] ++(2,0)
+    to [short, -*] ++(1,0) coordinate(vd) node[above left] {$v_D$};
+        \draw (vd) to [R, a=${R_B=\SI{40}{k\ohm}}$] ++(0,3) node[vcc]{} node [above right]{$E$};
+    \draw (vd) to [D*, l=$D_1$] ++(0,-3) node[ground]{};
+    \draw (vd) to [C=${C_1=\infty}$] ++(3,0) coordinate(vo) to[R, l2^={$R_L$ and \SI{10}{k\ohm}}] ++(0,-3) node[ground]{};
+    \draw (vo) to [short, -o] ++(1,0) node[right]{$v_o$};
+\end{circuitikz}
+\qquad
+\begin{circuitikz}[
+    ]
+    \draw (0,0) to [short, *-] ++(0,.3) node[pmos, anchor=D](M1){} 
+    (M1.S) to[short] ++(0,1) node[vcc]{};
+    \draw (0,0) to [short, ] ++(0,-.3) node[nmos, anchor=D](M2){} 
+    (M2.S) to[short] ++(0,-1) node[ground]{};
+    \draw (M1.G) -- (M2.G) coordinate[midway](ii);
+    \draw (0,0) to[short, -o] ++(0.5,0);
+    \draw (ii) to[short, *-o] ++(-0.5,0);
+\end{circuitikz}
+
+\bigskip
+
+\begin{circuitikz}[american]
+    %\draw (0,0) node[npn](Q1){};
+    % \draw (Q1-B) node[anchor=west, right=7mm, ]{Q1};
+    % the red poles are bad here...
+    \draw[red] (-1,0) node[below]{B} coordinate(Q1-B) to[color=red, short, o-*] (0,0) node[right=6mm]{Q1};
+    \draw[red] (0,0) to[color=red, american controlled current source, invert, l_=$\alpha i_e$, -o]
+    (0,1.5) coordinate(Q1-C) node[right]{C};
+    \draw[red] (0,0) to [color=red, R=$r_e$, i=$i_e$, -o] (0, -2) coordinate(Q1-E) node[left]{E};
+    \draw (Q1-E) to[R, l=$R_E$] (0,-4) node[ground]{};
+    \draw (Q1-B) to[short] (-2,0) coordinate (in)
+    to[R, l=$R_2$] (-2, -4) node[ground]{};
+    \draw (in)  to[R, l_=$R_1$] (-2, 2.5) coordinate(topgnd)
+    to[short] ++(-1.5,0) node[ground]{};
+    \draw (Q1-C) to[short] (0,2.5) to[short] (topgnd);
+    \draw (Q1-E) to[short, -o] ++(1,0) node[right]{$v_o$};
+    \draw (-4, 0) to[C=$C_1$, -*] (in);
+    \draw (-4, 0) to [sV, v<=$v_s$] (-4,-4) node[ground]{};
+    % re-do the red poles to avoid problems
+    \draw[color=red] (Q1-B) node[ocirc]{} (Q1-C) node[ocirc]{}  (Q1-E) node[ocirc]{} ;
+\end{circuitikz}
+\begin{circuitikz}[american,]
+    % diferencial de entrada
+    \draw (0,0) node[bjtnpn](Q1){};
+    \draw (Q1.B) node[anchor=west, right=7mm, ]{Q1};
+    \draw (Q1) ++(3,0) node[bjtnpn, xscale=-1](Q2){};
+    \draw (Q2.B) node[anchor=east, left=7mm, ]{Q2};
+    \draw (Q1.E) to [R, l=$R_{E1}$] ++(0,-2) coordinate(q1ee);
+    \draw (Q2.E) to [R, l_=$R_{E2}$] ++(0,-2) coordinate(q2ee);
+    \draw (q1ee) -- (q2ee);
+    \draw ($(q1ee)!0.5!(q2ee)$) to[short] ++(0,-1) node[bjtnpn,anchor=C](Q3){};%
+    \node at (Q3.B) [bjtnpn, anchor=B, xscale=-1](Q4){} ;
+    \draw (Q4.C) -| (Q4.B);
+    \draw (Q4.C) to[R, l_={$R_{EE}$}, -*] ++(-3,0) coordinate(ree);
+    \draw (Q3.E) node[vee](VEE){$V_{EE}=\SI{-10}{V}$};
+    \draw (Q4.E) node[vee]{};
+    \draw (Q2.C) node[vcc]{$V_{CC}$};
+    \draw (Q1.C) to[R, l_=$R_C$] ++(0,3) node[vcc](VCC){$V_{CC}=\SI{10}{V}$};
+    \draw (Q1.C) to[short, -*] ++(1,0) coordinate(vo1) node[above]{$v_{o}$};
+    \draw (Q1.B) to[R=$R_{B1}$]  (Q1.B-|ree) to[V=$v_s$, invert] (ree) node[ground](GND){};
+    \draw (Q2.B) -- ++(0.5,0) coordinate(q2bb) to[R=$R_{B2}$] (q2bb|-GND) node[ground]{};
+\end{circuitikz}
+\qquad
+\begin{circuitikz}[american, ]
+    \draw (0,0) to[R, l2_=$R_s$ and \SI{4}{k\ohm}]
+    ++(0,-2.5) to[sV, v<=$v_s$] ++(0,-2) node[ground](GND){};
+    \draw (0,0) node[left]{$v'_s$} to[C=$C_1$, -*] ++(2,0) \coord(b1);
+    \draw (b1) to [R, l2_=$R_1$ and \SI{8}{k\ohm}] ++(0,3) node[vcc](VCC){$V_{CC}$};
+    \draw (b1) to [R, l2^=$R_2$ and \SI{8}{k\ohm}] (b1 |- GND) node[ground]{};
+    \draw (b1) to [short] ++(1,0) node[npn, anchor=B](Q1){} \bjtname{Q1};
+    \draw (Q1.E) to [R, l2^=$R_E$ and \SI{75}{\ohm}] ++(0,-2) \coord(ee)
+    to [R, l2^=$R_{EP}$ and \SI{5}{k\ohm}] (Q1.E |- GND) node[ground]{};
+    \draw (Q1.C) to [R, l2_=$R_C$ and \SI{5}{k\ohm}] (Q1.C |- VCC)  node[vcc]{};
+    \draw (ee) to [short] ++(2,0) \coord(e2) to [C=$C_4$] (e2 |- GND) node[ground]{};
+    \draw (Q1.C) to [short] ++(1,0) to[C=$C_5$] ++(1,0) \coord(vo);
+    \draw (vo) to[short, -o] ++(1,0) node[right]{$v_o$};
+\end{circuitikz}
+
+
+\begin{circuitikz}[american, ]
+    \draw (0,0) node[left]{$v_s$} to[C=$C_1$, o-*] ++(2,0) \coord(b1);
+    \draw (b1) to [R, l2_=$R_1$ and \SI{8}{k\ohm}] ++(0,3) node[vcc](VCC){$V_{CC}=\SI{15}{V}$};
+    \draw (b1) to [R, l2^=$R_2$ and \SI{7}{k\ohm}] ++(0,-4) node[ground](GND){};
+    \draw (b1) to [short] ++(1,0) node[npn, anchor=B](Q1){} \bjtname{Q1};
+    \draw (Q1.C) to [short] (Q1.C |- VCC)  node[vcc]{};
+    \draw (Q1.E) to [R, l2^=$R_3$ and \SI{6}{k\ohm}] (Q1.E |- GND) node[ground]{};
+    \draw (Q1.E) to [short] ++(1,0) node[npn, anchor=B](Q2){} \bjtname{Q2};
+    \draw (Q2.E) to [R, l2^=$R_4$ and \SI{5}{k\ohm}] (Q2.E |- GND) node[ground]{};
+    \draw (Q2.C) to [R, l2_=$R_5$ and \SI{5}{k\ohm}] (Q2.C |- VCC)  node[vcc]{};
+    \draw (Q2.E) to [short] ++(2,0) \coord(e2) to [C=$C_4$] (e2 |- GND) node[ground]{};
+    \draw (Q2.C) to [short] ++(1.5,0) to[C=$C_5$] ++(2,0) \coord(vo) to[R, l2^=$R_L$ and \SI{100}{k\ohm}] ++(0,-2) node[ground]{};
+    \draw (vo) to[short, -o] ++(1,0) node[right]{$v_o$};
+\end{circuitikz}
+\quad
+\begin{circuitikz}[]
+    \draw (0,0)  node[op amp](oa1){\texttt{oa1}}
+    (oa1.+) to[R, l=$2R_0$] ++(-2,0) coordinate(a)
+    (oa1.-) to[R, l_=$2R_0$] ++(-2,0) coordinate(b)
+    -- coordinate[pos=0.5](c) (a) (c) -- ++(-0.5,0)
+    to[battery2, invert, l_=$E$] ++(0,-2.8) node[ground](GND){};
+    \draw (oa1.+) to[R=$R_0$] (oa1.+ |- GND) node[ground]{};
+    \draw (oa1.-)  to[short] ++(0,1) coordinate(tmp) to[sR=$R(T)$]
+        (tmp -| oa1.out) to[short, -*] (oa1.out) node[below]{$v_1$};
+    \draw (oa1.out) to[R=$R_1$] ++(2,0) node[op amp, anchor=-](oa2){\texttt{oa2}};
+    \draw (oa2.-) to[short] ++(0,1) coordinate(tmp) to[R=$R_G$]
+    (tmp -| oa2.out) to[short] (oa2.out) to[short,*-o] ++(1,0) node[right]{$v_o$};
+    \draw (tmp) -- ++(0,2) to[R=$R_2$] ++(-2,0)
+        node[vcc, rotate=90](ez){} (ez.north) node[left]{$E_Z$};
+        \draw (oa2.+) to[short] (oa2.+ |- GND) node[ground]{};
+    \begin{scope}[
+        xshift=5.8cm, yshift=-1.8cm,
+        scale=0.7, xslant=.2, transform shape,
+        circuitikz/seven seg/thickness=3pt,
+        circuitikz/seven seg/segment sep=0.5pt,
+        ]
+        \path (0,0)  node[seven segment val=3 dot off box off](d1){}
+        --++(2.8em,0)node[seven segment val=7 dot empty box off](d2){}
+        --++(2.8em,0) node[seven segment val=2 dot empty box off](d3){};
+        \coordinate (nw) at (d1.north west);
+        \coordinate (se) at (d3.south east);
+    \end{scope}
+    \coordinate (display-nw) at ($(nw)+(-0.5,0.3)$);
+    \coordinate (display-se) at ($(se)+(0.5,-0.3)$);
+    \draw (display-se) rectangle (display-nw);
+    \draw (oa2.out) -- (oa2.out |- display-nw);
+    \draw (oa2.out |- display-se) -- (oa2.out |- GND) node[ground]{};
+\end{circuitikz}
+
+\bigskip 
+
+\begin{circuitikz}[
+    quadr/.style={draw, minimum size=1.4em, fill=#1}, quadr/.default=white]
+    \draw (0,0) coordinate(start) node[op amp](A1){}
+    (A1.-) to[short] ++(0,1) coordinate(tmp) to[R] (tmp -| A1.out) to[short] (A1.out)
+    (A1.-) to[short] ++(-1,0) node[above](L){$v_1$}
+    (A1.+) to[short] ++(-1,0) node[above]{$v_2$}
+    (A1.out) to[short] ++(1,0) node[above](R){$v_o$};
+    \path (start) -- ++(0,-1.5) coordinate(tmp) -- (L |- tmp) -- node[midway, quadr]{a} (R |- tmp);
+    %
+    \draw (6,0) coordinate(start) node[op amp](A1){}
+    (A1.-) to[short] ++(0,1) coordinate(tmp) to[R] (tmp -| A1.out) to[short] (A1.out)
+    (A1.-) to[R] ++(-2,0) node[above](L){$v_1$}
+    (A1.+) to[R] ++(-2,0) node[above]{$v_2$}
+    (A1.out) to[short] ++(1,0) node[above](R){$v_o$};
+    \path (start) -- ++(0,-1.5) coordinate(tmp) -- (L |- tmp) -- node[midway, quadr]{b} (R |- tmp);
+    %
+    \draw (12,0) coordinate(start) node[op amp](A1){}
+    (A1.-) to[short] ++(0,1) coordinate(tmp) to[R] (tmp -| A1.out) to[short] (A1.out)
+    (A1.-) to[R] ++(-2,0) node[above](L){$v_1$}
+    (A1.+) to[R] ++(-2,0) node[above]{$v_2$}
+    (A1.+) to[R] ++(0,-1.5) node[ground]{}
+    (A1.out) to[short] ++(1,0) node[above](R){$v_o$};
+    \path (start) -- ++(0,-1.5) coordinate(tmp) -- (L |- tmp) -- node[midway, quadr]{c} (R |- tmp);
+\end{circuitikz}
+\qquad
+\begin{circuitikz}[scale=0.8, transform shape]
+    \draw (in) node[op amp, noinv input up, anchor=out](B){}
+    (B.out) to[D*, -*] ++(1,0) \coord(d2)
+    (B.-) -- ++(0,-1) \coord(tmp) -- (tmp-|d2) -- (d2);
+    \draw (tmp -| d2) to[R] ++(0,-1.5) node[ground](GND){};
+    \draw (d2) to[R, -*] ++(2,0) \coord(d3) to[C] (d3 |- GND) node[ground]{};
+    \draw (d3) -- ++(1,0) node[midway, above]{out};
+\end{circuitikz}
+
+\bigskip
+
+\begin{circuitikz}
+    \draw (0,0) node[oscillator](O){} (O.3) -- ++(1,0) \coord(w0) node[above]{$f_0$}
+    to[twoport, t=$\nearrow$, l_=sensor, *-*, name=S] ++(3,0) node[above]{$v_0$}
+    to[amp, t=A, -*] ++(2,0) node[above]{$v_1$} to[highpass, l=HP:$f_H$] ++(3,0)
+    node[mixer, anchor=1](M){} (M.3) to[short, -*] ++(1,0) node[above]{$v_2$}
+    to[lowpass, l=LP:$f_L$, -o] ++(3,0) node[above]{out};
+    \draw (w0) -- ++(0,-1.5) -| (M.2);
+    \draw (S.north) ++(-1,1) node[cloud, draw, aspect=0.7](C){$x(t)$};
+    \draw[->] (C.-30) to[bend left] (S);
+    \path (M.1) node[inputarrow]{} (M.2) node[inputarrow, rotate=90]{};
+\end{circuitikz}
+
+\begin{circuitikz}[color=green!50!black]
+    \gdef\mysensor#1(#2){node[draw, minimum size=1cm, #1](#2){RG87}
+        (S.west) -- ++(-0.5,0) node[ground]{}
+        (S.north) node[vcc]{$+V_{CC}$}
+        (S.south) node[vee]{$-V_{CC}$}
+    }
+    \draw (0,0)  \mysensor{color=red}(S);
+    \draw (S.east) -- ++(1,0) node[midway, above]{$v_s$} node[op amp, anchor=+](OA1){oa1};
+    \draw (OA1.+) to[nI=$S_{i_n}$] ++(0,-2) node[ground]{};
+    \draw (OA1.-) -- ++(0,1) -| (OA1.out);
+    \draw (OA1.out) to[R=$R$, -*] ++(2,0) coordinate(s1) -- ++(0, -1) node[op amp, anchor=-](OA2){oa2};
+    \draw (OA2.-) to[R=$R_Z$] ++(-2,0) to [battery2, invert, l_=$E_Z$] ++(0,-1) node[ground]{};
+    \draw (OA2.+) -- ++(0,-0.5) node[ground]{};
+    \node [below] at (OA2.out) {$v_1$};
+    \draw (s1) to[R=$R_A$] (s1-|OA2.out) -- (OA2.out) to[R=$R$,-*] ++(2,0) coordinate(inv)  -- ++(0, -1) node[op amp, anchor=-](OA3){oa3};
+    \draw (OA3.+) -- ++(0,-0.5) node[ground]{};
+    \draw (inv) to[R=$R$] (inv-|OA3.out) -- (OA3.out) to[short,-o] ++(1,0) node[right]{$v_o$};
+\end{circuitikz}
+
+\begin{circuitikz}[]
+    \draw (6,0) node[op amp](A1){} (A1.+) -- ++(0,-1) node[ground](GND){};
+    \draw (A1.-) to[R, l_=$R_0$] ++(-2,0) \coord(in) to[sV,l=$e_0(t)$] (in|-GND) node[ground]{}
+    (A1.-) -- ++(0,1.5) \coord(tmp) to[sC, l_=$C(P)$] (tmp-|A1.out) -- (A1.out) ;
+    \draw (tmp) -- ++(0, 1) \coord(tmp1) to[R=$R_B$] (tmp1-|A1.out) -- (tmp-|A1.out);
+    \draw (A1.out) to[C=$C_H$] ++(2,0) \coord(hp) to[R=$R_H$] (hp|-GND) node[ground]{};
+    \draw (hp) -- ++(1,0) node[op amp, anchor=+](A2){} (A2.out) to[D*, -*] ++(1.5,0) \coord(sdo) to[C, l_=$C_P$] (sdo|-GND) node[ground]{};
+    \draw (A2.-) -- ++(0,1) -| (sdo);
+    \draw (sdo) -- ++(1,0) \coord(o1) to[R=$R_P$] (o1|-GND) node[ground]{};
+    \draw (o1) to[short, -o] ++(1,0) node[right]{$v_o$};
+        \node[below, color=blue] at (A1.out) {$v_1$};
+        \node[above left, color=blue] at (A2.+) {$v_2$};
+\end{circuitikz}
+
+\end{document}
+
