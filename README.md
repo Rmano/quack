@@ -23,6 +23,11 @@ the LaTeX file. I used *new action* -> build your own and
         git commit -m "Set-up gh-pages orphan branch"
         git push origin gh-pages
 
-4. Went to Settings -> Pages and the page was already on (!); I choosed a theme (minimal)
+4. Went to Settings -> Pages and the page was already on (!); I choosed a theme (minimal).
+
+5. To keep also `gh-pages` in sync, I did (hope it's ok)
+
+        git branch --set-upstream-to origin/gh-pages  gh-pages
+        
 
 
