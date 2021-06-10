@@ -27,7 +27,8 @@ the LaTeX file. I used *new action* -> build your own and
 
 5. To keep also `gh-pages` in sync, I did (hope it's ok)
 
-        git branch --set-upstream-to origin/gh-pages  gh-pages
-        
+        git branch --set-upstream-to origin/gh-pagetmp
+
+6. Try to apply https://github.com/marketplace/actions/deploy-to-github-pages
 
 

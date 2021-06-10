@@ -29,7 +29,16 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: build the test file
-        run: make build
+        run:  |
+            make build
+            mkdir tmp
+            cp doc/lots_of_circuits.pdf tmp/
+
+      - name: deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: tmp # The folder the action should deploy.
 
       # Runs a set of commands using the runners shell
       #- name: Run a multi-line script
