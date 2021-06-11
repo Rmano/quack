@@ -29,6 +29,9 @@ the LaTeX file. I used *new action* -> build your own and
 
         git branch --set-upstream-to origin/gh-pagetmp
 
-6. Try to apply https://github.com/marketplace/actions/deploy-to-github-pages
+6. Try to apply [Deploy to GitHub pages](https://github.com/marketplace/actions/deploy-to-github-pages)
+    - in the first test it wiped out my `gh-pages` branch...
+    - it needs a `clean: false`!
+
 
 
