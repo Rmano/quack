@@ -1,1 +1,5 @@
 theme: jekyll-theme-minimal
+logo: quacklogo.png
+show_downloads: true
+title: [quack is the answer]
+description: [A project for exploring GitHub pages and actions]
