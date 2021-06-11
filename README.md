@@ -32,6 +32,7 @@ the LaTeX file. I used *new action* -> build your own and
 6. Try to apply [Deploy to GitHub pages](https://github.com/marketplace/actions/deploy-to-github-pages)
     - in the first test it wiped out my `gh-pages` branch...
     - it needs a `clean: false`!
-
+    
+7. Changing names to actions and try to add an action for PR.
 
 
