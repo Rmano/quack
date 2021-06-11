@@ -34,5 +34,8 @@ the LaTeX file. I used *new action* -> build your own and
     - it needs a `clean: false`!
     
 7. Changing names to actions and try to add an action for PR.
+    - works ok, now I have one action that deploys (on pushes to main) and another one that just checks (on PRs)
+    - if you add `[skip ci]` in the commit or merge title it will... skip actions.
+
 
 
